@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockViz | Markets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/markets.css">
+</head>
+
+<body>
+    <!-- Header (Same as homepage) -->
+    <header class="markets-header">
+        <nav>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>StockViz</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Stock Grid -->
+    <section class="stock-grid">
+        <h2>Available Stocks</h2>
+        <div class="grid-container" id="stockGrid">
+            <!-- Dynamically populated by markets.js -->
+        </div>
+    </section>
+
+    <!-- Chart Modal (Hidden by default) -->
+    <div class="chart-modal" id="chartModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3 id="stockTitle">AAPL</h3>
+            <div class="chart-container">
+                <canvas id="stockChart"></canvas>
+            </div>
+            <div class="time-filters">
+                <button class="active" data-range="1M">1M</button>
+                <button data-range="1Y">1Y</button>
+                <button data-range="5Y">5Y</button>
+                <button data-range="MAX">Max</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./assets/js/markets.js"></script>
+</body>
+
+</html>
