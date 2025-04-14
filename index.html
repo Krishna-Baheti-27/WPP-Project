@@ -37,7 +37,7 @@
                 <span>StockViz</span>
             </div>
 
-            <div class="nav-links">
+            <div class="nav-links" id="navLinks">
                 <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
                 <a href="markets.html"><i class="fas fa-chart-bar"></i> Markets</a>
                 <a href="trade.html"><i class="fas fa-exchange-alt"></i> Trade</a>
@@ -46,8 +46,10 @@
             </div>
 
             <div class="search-box">
-                <input type="text" placeholder="Search AAPL, TSLA, BTC...">
-                <button><i class="fas fa-search"></i></button>
+                <form id="searchForm">
+                    <input type="text" placeholder="Search AAPL, TSLA, BTC...">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
             </div>
 
             <button class="mobile-menu-btn">
@@ -234,7 +236,7 @@
                 <h3>Advanced Charting</h3>
                 <p>Over 100 technical indicators, drawing tools, and customizable timeframes for professional analysis.
                 </p>
-                <a href="#" class="feature-link">Explore Charts <i class="fas fa-arrow-right"></i></a>
+                <a href="markets.html" class="feature-link">Explore Charts <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="feature-card">
@@ -243,7 +245,7 @@
                 </div>
                 <h3>Virtual Trading</h3>
                 <p>Practice strategies risk-free with our virtual trading simulator before going live.</p>
-                <a href="#" class="feature-link">Start Trading <i class="fas fa-arrow-right"></i></a>
+                <a href="trade.html" class="feature-link">Start Trading <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="feature-card">
@@ -252,7 +254,7 @@
                 </div>
                 <h3>Stock Comparison</h3>
                 <p>Compare multiple stocks side-by-side to identify trends and make informed decisions.</p>
-                <a href="#" class="feature-link">Compare Stocks <i class="fas fa-arrow-right"></i></a>
+                <a href="compare.html" class="feature-link">Compare Stocks <i class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="feature-card">
@@ -261,7 +263,7 @@
                 </div>
                 <h3>Market News</h3>
                 <p>Stay updated with the latest financial news and trends that impact your investments.</p>
-                <a href="#" class="feature-link">Read News <i class="fas fa-arrow-right"></i></a>
+                <a href="news.html" class="feature-link">Read News <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -270,7 +272,7 @@
     <section class="news-section">
         <div class="section-header">
             <h2>Market News & Analysis</h2>
-            <a href="#" class="view-all">View All News <i class="fas fa-arrow-right"></i></a>
+            <a href="news.html" class="view-all">View All News <i class="fas fa-arrow-right"></i></a>
         </div>
 
         <div class="news-grid">
@@ -287,7 +289,7 @@
                     <h3>Tech Rally Continues as AI Stocks Lead Market Recovery</h3>
                     <p>Major tech companies show stronger-than-expected Q2 results, driving NASDAQ to record highs amid
                         growing AI investment.</p>
-                    <a href="#" class="read-more">Read Analysis <i class="fas fa-arrow-right"></i></a>
+                    <a href="news.html" class="read-more">Read Analysis <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -303,7 +305,7 @@
                     <h3>Fed Signals Potential Rate Cuts in Coming Months</h3>
                     <p>Federal Reserve chair hints at possible policy adjustments amid cooling inflation data and
                         economic slowdown concerns.</p>
-                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    <a href="news.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -319,7 +321,7 @@
                     <h3>Bitcoin Surges Past $45K as Institutional Interest Grows</h3>
                     <p>Cryptocurrency markets rally as major financial institutions announce new blockchain investment
                         products.</p>
-                    <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    <a href="news.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -330,8 +332,8 @@
         <div class="cta-container">
             <h2>Ready to Elevate Your Trading?</h2>
             <p>Join thousands of investors who use StockViz to make smarter trading decisions.</p>
-            <a href="#" class="cta-btn">
-                <span>Start Free Trial</span>
+            <a href="trade.html" class="cta-btn">
+                <span>Start Trading Now</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -356,10 +358,9 @@
             <div class="footer-section">
                 <h4>Platform</h4>
                 <ul>
-                    <li><a href="#">Features</a></li>
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Mobile Apps</a></li>
-                    <li><a href="#">API</a></li>
+                    <li><a href="feature.html">Features</a></li>
+                    <li><a href="trade.html">Trading</a></li>
+                    <li><a href="news.html">Trending News</a></li>
                 </ul>
             </div>
 
@@ -367,7 +368,7 @@
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="#">Tutorials</a></li>
-                    <li><a href="#">Market Data</a></li>
+                    <li><a href="markets.html">Market Data</a></li>
                     <li><a href="#">Help Center</a></li>
                 </ul>
             </div>
@@ -375,16 +376,16 @@
             <div class="footer-section">
                 <h4>Company</h4>
                 <ul>
-                    <li><a href="#">About Us</a></li>
+                    <li><a href="about.html">About Us</a></li>
                     <li><a href="#">Careers</a></li>
                     <li><a href="#">Contact</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="privacy.html">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2023 StockViz. All rights reserved.</p>
+            <p>&copy; 2025 StockViz. All rights reserved.</p>
         </div>
     </footer>
 

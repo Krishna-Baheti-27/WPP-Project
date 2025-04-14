@@ -1,6 +1,21 @@
 document.addEventListener("DOMContentLoaded", function () {
   loadStockGrid();
   setupModal();
+
+  // Check for symbol in URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const symbol = urlParams.get("symbol");
+
+  if (symbol) {
+    // Check if symbol exists in our stocks array
+    const stockExists = stocks.some((s) => s.symbol === symbol);
+    if (stockExists) {
+      // Small delay to ensure DOM is fully loaded
+      setTimeout(() => {
+        openChartModal(symbol);
+      }, 300);
+    }
+  }
 });
 
 function loadStockGrid() {
