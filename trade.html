@@ -42,6 +42,10 @@
                 <a href="compare.html"><i class="fas fa-balance-scale"></i> Compare</a>
                 <a href="news.html"><i class="fas fa-newspaper"></i> News</a>
             </div>
+            <div class="search-box">
+                <input type="text" id="stockSearch" placeholder="Search AAPL, TSLA...">
+                <button><i class="fas fa-search"></i></button>
+            </div>
             <button class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
             </button>
@@ -60,6 +64,9 @@
             </div>
 
             <div class="trade-content">
+                <div class="stock-search">
+                    <input type="text" id="stockFilter" placeholder="Search stocks...">
+                </div>
 
                 <div class="stock-grid" id="stockGrid">
                     <!-- Stock cards will be populated by JavaScript -->
@@ -123,6 +130,10 @@
             <div class="portfolio-summary">
                 <h3>Portfolio Summary</h3>
                 <div class="portfolio-value" id="portfolioValue">$24,589.32</div>
+                <div class="portfolio-change positive" id="portfolioChange">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>+$1,245.78 (5.3%) Today</span>
+                </div>
             </div>
 
             <div class="trade-form">
