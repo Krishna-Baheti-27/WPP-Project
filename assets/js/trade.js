@@ -1,6 +1,4 @@
-// trade.js - Stock Trading System with Local Storage
-
-// DOM Elements
+// === DOM Elements ===
 const stockGrid = document.getElementById("stockGrid");
 const stockSymbolInput = document.getElementById("stock-symbol");
 const orderTypeSelect = document.getElementById("order-type");
@@ -16,107 +14,135 @@ const portfolioStocks = document.getElementById("portfolioStocks");
 const portfolioValue = document.getElementById("portfolioValue");
 const portfolioChange = document.getElementById("portfolioChange");
 
-// Sample stock data
+// === Stock Data ===
 const stocks = [
   { symbol: "AAPL", name: "Apple Inc.", price: 189.37, change: 2.34 },
-  { symbol: "MSFT", name: "Microsoft Corp.", price: 420.72, change: -1.15 },
   { symbol: "GOOGL", name: "Alphabet Inc.", price: 153.58, change: 0.89 },
+  { symbol: "MSFT", name: "Microsoft Corp.", price: 420.72, change: -1.15 },
+  { symbol: "ADBE", name: "Adobe Inc.", price: 507.23, change: 1.02 },
   { symbol: "AMZN", name: "Amazon.com Inc.", price: 178.75, change: -3.22 },
-  { symbol: "TSLA", name: "Tesla Inc.", price: 172.63, change: 5.67 },
-  { symbol: "META", name: "Meta Platforms", price: 485.58, change: 1.45 },
-  { symbol: "NVDA", name: "NVIDIA Corp.", price: 903.63, change: 12.34 },
+  { symbol: "BAC", name: "Bank of America Corp.", price: 37.56, change: -0.12 },
+  { symbol: "CRM", name: "Salesforce Inc.", price: 286.17, change: 0.45 },
+  { symbol: "CSCO", name: "Cisco Systems Inc.", price: 48.92, change: -0.34 },
+  { symbol: "DIS", name: "Walt Disney Co.", price: 112.36, change: 1.12 },
+  { symbol: "HD", name: "Home Depot Inc.", price: 345.83, change: 2.45 },
+  { symbol: "INTC", name: "Intel Corp.", price: 31.24, change: -0.78 },
+  { symbol: "JNJ", name: "Johnson & Johnson", price: 157.93, change: -1.23 },
   { symbol: "JPM", name: "JPMorgan Chase", price: 198.34, change: -0.56 },
+  { symbol: "KO", name: "Coca-Cola Co.", price: 62.17, change: 0.22 },
+  { symbol: "MA", name: "Mastercard Inc.", price: 455.21, change: 1.56 },
+  { symbol: "META", name: "Meta Platforms", price: 485.58, change: 1.45 },
+  { symbol: "NFLX", name: "Netflix Inc.", price: 610.78, change: -2.11 },
+  { symbol: "NVDA", name: "NVIDIA Corp.", price: 903.63, change: 12.34 },
+  { symbol: "PFE", name: "Pfizer Inc.", price: 26.78, change: -0.34 },
+  { symbol: "TSLA", name: "Tesla Inc.", price: 172.63, change: 5.67 },
+  { symbol: "UNH", name: "UnitedHealth Group", price: 510.45, change: 3.45 },
   { symbol: "V", name: "Visa Inc.", price: 275.91, change: 0.23 },
   { symbol: "WMT", name: "Walmart Inc.", price: 59.83, change: -1.12 },
+  { symbol: "XOM", name: "Exxon Mobil Corp.", price: 116.28, change: 0.65 },
+  { symbol: "PG", name: "Procter & Gamble Co.", price: 165.31, change: -0.29 },
 ];
 
-// Current user data
+// === User Data ===
+let currentUserId = null;
 let currentUser = null;
 let selectedStock = null;
 
-// Initialize the application
+// === On Page Load ===
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if user is logged in (simplified for demo)
-  currentUser = getCurrentUser();
-  if (!currentUser) {
-    alert("Please login first");
-    window.location.href = "index.html";
-    return;
-  }
-
-  // Initialize UI
+  verifySession();
   renderStockGrid();
   renderPortfolio();
   updatePortfolioSummary();
 
-  // Event listeners
   orderTypeSelect.addEventListener("change", toggleLimitPrice);
   quantityInput.addEventListener("input", updateTotal);
   buyBtn.addEventListener("click", placeBuyOrder);
   sellBtn.addEventListener("click", placeSellOrder);
 });
 
-// Get current user from localStorage
-function getCurrentUser() {
-  const username = "john123"; // In a real app, this would come from login/session
-  const users = JSON.parse(localStorage.getItem("users")) || {};
+// === Session Functions ===
+function verifySession() {
+  currentUserId = localStorage.getItem("stockviz_loggedInUser");
+  const allUsers = JSON.parse(localStorage.getItem("stockviz_users")) || {};
 
-  if (!users[username]) {
-    // Initialize new user if doesn't exist
-    users[username] = {
-      pin: "4567", // Default PIN for demo
-      portfolio: {},
-      balance: 10000, // Starting balance
-    };
-    localStorage.setItem("users", JSON.stringify(users));
+  if (!currentUserId || !allUsers[currentUserId]) {
+    alert("You must be logged in to access Trade page.");
+    window.location.href = "login.html";
+    return;
   }
 
-  return { username, ...users[username] };
-}
+  const user = allUsers[currentUserId];
+  const enteredPin = prompt("Enter your 4-digit Security PIN:");
 
-// Save user data to localStorage
-function saveUserData() {
-  const users = JSON.parse(localStorage.getItem("users")) || {};
-  users[currentUser.username] = {
-    pin: currentUser.pin,
-    portfolio: currentUser.portfolio,
-    balance: currentUser.balance,
+  if (enteredPin === null) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  if (enteredPin !== user.pin) {
+    alert("Incorrect PIN. Redirecting to login page.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUser = {
+    pin: user.pin,
+    balance: user.balance !== undefined ? user.balance : 10000,
+    portfolio: user.portfolio || {},
   };
-  localStorage.setItem("users", JSON.stringify(users));
+
+  saveUserData();
+
+  const welcomeArea = document.getElementById("welcomeArea");
+  if (welcomeArea) {
+    welcomeArea.innerHTML = `Welcome back, <strong>${currentUserId}</strong>`;
+  }
+
+  const logoutBtn = document.querySelector(".logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("stockviz_loggedInUser");
+      window.location.href = "login.html";
+    });
+  }
 }
 
-// Render stock grid
+function saveUserData() {
+  const allUsers = JSON.parse(localStorage.getItem("stockviz_users")) || {};
+  allUsers[currentUserId] = {
+    pin: currentUser.pin,
+    balance: currentUser.balance,
+    portfolio: currentUser.portfolio,
+  };
+  localStorage.setItem("stockviz_users", JSON.stringify(allUsers));
+}
+
+// === Stock Grid Functions ===
 function renderStockGrid() {
   stockGrid.innerHTML = "";
 
   stocks.forEach((stock) => {
-    const stockCard = document.createElement("div");
-    stockCard.className = "stock-card";
-    stockCard.innerHTML = `
-            <div class="stock-symbol">${stock.symbol}</div>
-            <div class="stock-name">${stock.name}</div>
-            <div class="stock-price">$${stock.price.toFixed(2)}</div>
-            <div class="stock-change ${
-              stock.change >= 0 ? "positive" : "negative"
-            }">
-                ${stock.change >= 0 ? "+" : ""}${stock.change.toFixed(2)}%
-            </div>
-        `;
-
-    stockCard.addEventListener("click", () => selectStock(stock));
-    stockGrid.appendChild(stockCard);
+    const card = document.createElement("div");
+    card.className = "stock-card";
+    card.innerHTML = `
+      <div class="stock-symbol">${stock.symbol}</div>
+      <div class="stock-name">${stock.name}</div>
+      <div class="stock-price">$${stock.price.toFixed(2)}</div>
+      <div class="stock-change ${stock.change >= 0 ? "positive" : "negative"}">
+        ${stock.change >= 0 ? "+" : ""}${stock.change.toFixed(2)}%
+      </div>
+    `;
+    card.addEventListener("click", () => selectStock(stock, card));
+    stockGrid.appendChild(card);
   });
 }
 
-// Select a stock for trading
-function selectStock(stock) {
-  // Remove selected class from all cards
-  document.querySelectorAll(".stock-card").forEach((card) => {
-    card.classList.remove("selected");
-  });
-
-  // Add selected class to clicked card
-  event.currentTarget.classList.add("selected");
+function selectStock(stock, cardElement) {
+  document
+    .querySelectorAll(".stock-card")
+    .forEach((card) => card.classList.remove("selected"));
+  cardElement.classList.add("selected");
 
   selectedStock = stock;
   stockSymbolInput.value = stock.symbol;
@@ -124,18 +150,18 @@ function selectStock(stock) {
   updateTotal();
 }
 
-// Toggle limit price field based on order type
+// === Trade Form Functions ===
 function toggleLimitPrice() {
   if (orderTypeSelect.value === "limit") {
     limitPriceGroup.style.display = "block";
     limitPriceInput.value = selectedStock ? selectedStock.price.toFixed(2) : "";
   } else {
     limitPriceGroup.style.display = "none";
+    limitPriceInput.value = "";
   }
   updateTotal();
 }
 
-// Update total cost estimate
 function updateTotal() {
   if (!selectedStock) return;
 
@@ -145,84 +171,10 @@ function updateTotal() {
       ? parseFloat(limitPriceInput.value)
       : selectedStock.price;
 
-  const total = quantity * price;
-  totalInput.value = total.toFixed(2);
+  totalInput.value = (quantity * price).toFixed(2);
 }
 
-// Render portfolio holdings
-function renderPortfolio() {
-  portfolioStocks.innerHTML = "";
-
-  if (
-    !currentUser.portfolio ||
-    Object.keys(currentUser.portfolio).length === 0
-  ) {
-    portfolioStocks.innerHTML =
-      '<p class="empty-portfolio">No holdings yet. Start trading!</p>';
-    return;
-  }
-
-  Object.entries(currentUser.portfolio).forEach(([symbol, holding]) => {
-    const stock = stocks.find((s) => s.symbol === symbol);
-    const currentValue = stock
-      ? holding.shares * stock.price
-      : holding.shares * holding.avgPrice;
-    const profitLoss = currentValue - holding.shares * holding.avgPrice;
-
-    const portfolioItem = document.createElement("div");
-    portfolioItem.className = "portfolio-item";
-    portfolioItem.innerHTML = `
-            <div>
-                <div class="portfolio-symbol">${symbol}</div>
-                <div class="portfolio-shares">${holding.shares} shares</div>
-            </div>
-            <div>
-                <div class="portfolio-amount">$${currentValue.toFixed(2)}</div>
-                <div class="portfolio-pl ${
-                  profitLoss >= 0 ? "positive" : "negative"
-                }">
-                    ${profitLoss >= 0 ? "+" : ""}${profitLoss.toFixed(2)}
-                </div>
-            </div>
-        `;
-    portfolioStocks.appendChild(portfolioItem);
-  });
-}
-
-// Update portfolio summary
-function updatePortfolioSummary() {
-  if (!currentUser) return;
-
-  // Calculate total portfolio value
-  let totalValue = currentUser.balance;
-  let todayChange = 0;
-
-  if (currentUser.portfolio) {
-    Object.entries(currentUser.portfolio).forEach(([symbol, holding]) => {
-      const stock = stocks.find((s) => s.symbol === symbol);
-      if (stock) {
-        totalValue += holding.shares * stock.price;
-        todayChange += holding.shares * stock.change;
-      }
-    });
-  }
-
-  portfolioValue.textContent = `$${totalValue.toFixed(2)}`;
-
-  // For demo, we'll just show a positive change
-  const changePercent = (
-    (todayChange / (totalValue - todayChange)) *
-    100
-  ).toFixed(2);
-  portfolioChange.innerHTML = `
-        <i class="fas fa-arrow-up"></i>
-        <span>+$${Math.abs(todayChange).toFixed(
-          2
-        )} (${changePercent}%) Today</span>
-    `;
-}
-
-// Place buy order
+// === Trade Actions ===
 function placeBuyOrder() {
   if (!validateTrade()) return;
 
@@ -233,45 +185,38 @@ function placeBuyOrder() {
       : selectedStock.price;
   const totalCost = quantity * price;
 
-  // Check if user has enough balance
   if (currentUser.balance < totalCost) {
-    alert("Insufficient funds for this trade");
+    alert("Insufficient balance to complete this purchase.");
     return;
   }
 
-  // Update user portfolio
-  if (!currentUser.portfolio[selectedStock.symbol]) {
-    currentUser.portfolio[selectedStock.symbol] = {
-      shares: 0,
-      avgPrice: 0,
-    };
-  }
-
-  const holding = currentUser.portfolio[selectedStock.symbol];
+  const holding = currentUser.portfolio[selectedStock.symbol] || {
+    shares: 0,
+    avgPrice: 0,
+  };
   const newTotalShares = holding.shares + quantity;
   const newAvgPrice =
     (holding.shares * holding.avgPrice + quantity * price) / newTotalShares;
 
-  holding.shares = newTotalShares;
-  holding.avgPrice = newAvgPrice;
+  currentUser.portfolio[selectedStock.symbol] = {
+    shares: newTotalShares,
+    avgPrice: newAvgPrice,
+  };
 
-  // Update user balance
   currentUser.balance -= totalCost;
 
-  // Save and update UI
   saveUserData();
-  updatePortfolioSummary();
   renderPortfolio();
+  updatePortfolioSummary();
+  resetTradeForm();
 
   alert(
-    `Successfully bought ${quantity} shares of ${
-      selectedStock.symbol
-    } at $${price.toFixed(2)} each`
+    `Bought ${quantity} shares of ${selectedStock.symbol} at $${price.toFixed(
+      2
+    )} each.`
   );
-  resetTradeForm();
 }
 
-// Place sell order
 function placeSellOrder() {
   if (!validateTrade()) return;
 
@@ -282,87 +227,117 @@ function placeSellOrder() {
       : selectedStock.price;
   const totalValue = quantity * price;
 
-  // Check if user has enough shares
-  if (
-    !currentUser.portfolio[selectedStock.symbol] ||
-    currentUser.portfolio[selectedStock.symbol].shares < quantity
-  ) {
-    alert(`You don't have enough shares of ${selectedStock.symbol} to sell`);
+  const holding = currentUser.portfolio[selectedStock.symbol];
+
+  if (!holding || holding.shares < quantity) {
+    alert(`You don't have enough shares of ${selectedStock.symbol} to sell.`);
     return;
   }
 
-  // Update user portfolio
-  const holding = currentUser.portfolio[selectedStock.symbol];
   holding.shares -= quantity;
-
-  // Remove from portfolio if shares reach 0
   if (holding.shares === 0) {
     delete currentUser.portfolio[selectedStock.symbol];
   }
 
-  // Update user balance
   currentUser.balance += totalValue;
 
-  // Save and update UI
   saveUserData();
-  updatePortfolioSummary();
   renderPortfolio();
+  updatePortfolioSummary();
+  resetTradeForm();
 
   alert(
-    `Successfully sold ${quantity} shares of ${
-      selectedStock.symbol
-    } at $${price.toFixed(2)} each`
+    `Sold ${quantity} shares of ${selectedStock.symbol} at $${price.toFixed(
+      2
+    )} each.`
   );
-  resetTradeForm();
 }
 
-// Validate trade (common for buy and sell)
 function validateTrade() {
-  // Check if stock is selected
   if (!selectedStock) {
-    alert("Please select a stock to trade");
+    alert("Please select a stock first.");
     return false;
   }
 
-  // Check quantity
   const quantity = parseInt(quantityInput.value);
-  if (isNaN(quantity) || quantity < 1) {
-    alert("Please enter a valid quantity (minimum 1 share)");
+  if (!quantity || quantity <= 0) {
+    alert("Please enter a valid quantity (minimum 1 share).");
     return false;
   }
 
-  // Check limit price if limit order
-  if (orderTypeSelect.value === "limit") {
-    const limitPrice = parseFloat(limitPriceInput.value);
-    if (isNaN(limitPrice)) {
-      alert("Please enter a valid limit price");
-      return false;
-    }
+  if (
+    orderTypeSelect.value === "limit" &&
+    (!limitPriceInput.value || parseFloat(limitPriceInput.value) <= 0)
+  ) {
+    alert("Please enter a valid limit price.");
+    return false;
   }
 
-  // Verify PIN
-  const enteredPin = pinInput.value;
-  if (enteredPin !== currentUser.pin) {
-    alert("Incorrect security PIN");
+  if (pinInput.value !== currentUser.pin) {
+    alert("Incorrect PIN entered!");
     return false;
   }
 
   return true;
 }
 
-// Reset trade form after successful trade
-function resetTradeForm() {
-  selectedStock = null;
-  stockSymbolInput.value = "";
-  priceInput.value = "";
-  totalInput.value = "";
-  quantityInput.value = "1";
-  pinInput.value = "";
-  limitPriceGroup.style.display = "none";
-  orderTypeSelect.value = "market";
+// === Portfolio Functions ===
+function renderPortfolio() {
+  portfolioStocks.innerHTML = "";
 
-  // Remove selected class from all cards
-  document.querySelectorAll(".stock-card").forEach((card) => {
-    card.classList.remove("selected");
+  if (
+    !currentUser.portfolio ||
+    Object.keys(currentUser.portfolio).length === 0
+  ) {
+    portfolioStocks.innerHTML = `<p class="empty-portfolio">No holdings yet. Start trading!</p>`;
+    return;
+  }
+
+  Object.entries(currentUser.portfolio).forEach(([symbol, holding]) => {
+    const stock = stocks.find((s) => s.symbol === symbol);
+    const currentPrice = stock ? stock.price : holding.avgPrice;
+    const currentValue = holding.shares * currentPrice;
+    const profitLoss = currentValue - holding.shares * holding.avgPrice;
+
+    const item = document.createElement("div");
+    item.className = "portfolio-item";
+    item.innerHTML = `
+      <div>
+        <div class="portfolio-symbol">${symbol}</div>
+        <div class="portfolio-shares">${holding.shares} shares</div>
+      </div>
+      <div>
+        <div class="portfolio-amount">$${currentValue.toFixed(2)}</div>
+        <div class="portfolio-pl ${profitLoss >= 0 ? "positive" : "negative"}">
+          ${profitLoss >= 0 ? "+" : ""}${profitLoss.toFixed(2)}
+        </div>
+      </div>
+    `;
+    portfolioStocks.appendChild(item);
   });
+}
+
+function updatePortfolioSummary() {
+  let total = 0;
+  let originalInvestment = 0;
+
+  Object.entries(currentUser.portfolio || {}).forEach(([symbol, holding]) => {
+    const stock = stocks.find((s) => s.symbol === symbol);
+    const currentPrice = stock ? stock.price : holding.avgPrice;
+    total += holding.shares * currentPrice;
+    originalInvestment += holding.shares * holding.avgPrice;
+  });
+
+  const change = total - originalInvestment;
+
+  portfolioValue.innerText = `$${total.toFixed(2)}`;
+  portfolioChange.innerText = `${change >= 0 ? "+" : ""}${change.toFixed(2)}`;
+  portfolioChange.className = change >= 0 ? "positive" : "negative";
+}
+
+function resetTradeForm() {
+  quantityInput.value = "";
+  limitPriceInput.value = "";
+  totalInput.value = "";
+  pinInput.value = "";
 }
